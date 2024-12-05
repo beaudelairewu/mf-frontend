@@ -2,13 +2,26 @@
   "name": "model_flow",
   "version": "0.1.0",
   "private": true,
+  "proxy": "https://api.meshy.ai",
   "dependencies": {
+    "@emotion/react": "^11.13.3",
+    "@emotion/styled": "^11.13.0",
+    "@mui/material": "^6.1.6",
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
+    "bootstrap": "^5.3.3",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "dotenv": "^16.4.7",
+    "lucide-react": "^0.456.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
+    "react-router-dom": "^6.28.0",
     "react-scripts": "5.0.1",
+    "tailwind-merge": "^2.5.5",
+    "tailwindcss-animate": "^1.0.7",
+    "three": "^0.170.0",
     "web-vitals": "^2.1.4"
   },
   "scripts": {
@@ -34,5 +47,14 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "@shadcn/ui": "^0.0.4",
+    "autoprefixer": "^10.4.20",
+    "http-proxy-middleware": "^3.0.3",
+    "postcss": "^8.4.49",
+    "tailwindcss": "^3.4.16",
+    "webpack": "^5.96.1",
+    "webpack-cli": "^5.1.4"
   }
 }
