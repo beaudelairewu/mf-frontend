@@ -26,18 +26,19 @@ export class SceneSetup {
 
     // Camera
     this.camera = new THREE.PerspectiveCamera(
-      75,
+      45, // Reduced FOV for better perspective
       this.container.clientWidth / this.container.clientHeight,
       0.1,
       1000
     );
-    this.camera.position.z = 5;
+    this.camera.position.set(5, 5, 5); // Better initial camera position
 
-    // Renderer
+    // Renderer with physically correct lighting
     this.renderer = new THREE.WebGLRenderer({ 
       antialias: true,
       alpha: true,
-      preserveDrawingBuffer: true
+      preserveDrawingBuffer: true,
+      physicallyCorrectLights: true // Enable physically correct lighting
     });
     this.renderer.setSize(this.container.clientWidth, this.container.clientHeight);
     this.renderer.setPixelRatio(window.devicePixelRatio);
@@ -45,7 +46,7 @@ export class SceneSetup {
     this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     this.renderer.outputColorSpace = THREE.SRGBColorSpace;
     this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    this.renderer.toneMappingExposure = 1;
+    this.renderer.toneMappingExposure = 1.0;
     this.container.appendChild(this.renderer.domElement);
 
     // Controls
@@ -53,8 +54,11 @@ export class SceneSetup {
     this.controls.enableDamping = true;
     this.controls.dampingFactor = 0.05;
     this.controls.screenSpacePanning = true;
+    this.controls.target.set(0, 0, 0);
+    this.controls.update();
 
     this.setupLights();
+    this.setupEnvironment();
     this.setupHelpers();
     this.startAnimation();
 
@@ -70,27 +74,54 @@ export class SceneSetup {
   }
 
   setupLights() {
-    // Ambient light
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+    // Ambient light for basic illumination
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.2);
     this.scene.add(ambientLight);
 
-    // Main directional light
-    const mainLight = new THREE.DirectionalLight(0xffffff, 1);
-    mainLight.position.set(5, 5, 5);
-    mainLight.castShadow = true;
-    mainLight.shadow.mapSize.width = 2048;
-    mainLight.shadow.mapSize.height = 2048;
-    this.scene.add(mainLight);
+    // Key light (main directional light)
+    const keyLight = new THREE.DirectionalLight(0xffffff, 1);
+    keyLight.position.set(5, 5, 5);
+    keyLight.castShadow = true;
+    keyLight.shadow.mapSize.width = 2048;
+    keyLight.shadow.mapSize.height = 2048;
+    keyLight.shadow.camera.near = 0.1;
+    keyLight.shadow.camera.far = 100;
+    keyLight.shadow.bias = -0.0001;
+    this.scene.add(keyLight);
 
     // Fill light
-    const fillLight = new THREE.DirectionalLight(0xffffff, 0.4);
-    fillLight.position.set(-5, 0, -5);
+    const fillLight = new THREE.DirectionalLight(0xffffff, 0.5);
+    fillLight.position.set(-5, 3, 0);
     this.scene.add(fillLight);
 
-    // Rim light
+    // Rim light for highlighting edges
     const rimLight = new THREE.DirectionalLight(0xffffff, 0.3);
-    rimLight.position.set(0, -5, 0);
+    rimLight.position.set(0, -2, -5);
     this.scene.add(rimLight);
+
+    // Ground bounce light
+    const bounceLight = new THREE.DirectionalLight(0xffffff, 0.2);
+    bounceLight.position.set(0, -5, 0);
+    this.scene.add(bounceLight);
+  }
+
+  setupEnvironment() {
+    // Create a simple environment map
+    const pmremGenerator = new THREE.PMREMGenerator(this.renderer);
+    pmremGenerator.compileEquirectangularShader();
+
+    // Create a basic environment
+    const envScene = new THREE.Scene();
+    envScene.background = new THREE.Color(0x444444);
+    const envLight = new THREE.DirectionalLight(0xffffff, 1);
+    envLight.position.set(1, 1, 1);
+    envScene.add(envLight);
+
+    // Generate environment map
+    const envMap = pmremGenerator.fromScene(envScene).texture;
+    this.scene.environment = envMap;
+    
+    pmremGenerator.dispose();
   }
 
   setupHelpers() {
