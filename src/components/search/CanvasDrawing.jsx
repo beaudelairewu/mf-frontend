@@ -181,7 +181,16 @@ const DrawingCanvas = ({ onClose, onImageReady }) => {
     const tempContext = tempCanvas.getContext('2d');
     tempContext.drawImage(canvas, 0, 0, 512, 384);
     
-    const imageData = tempCanvas.toDataURL('image/png');
+    // Compress more aggressively using lower quality JPEG instead of PNG
+    const imageData = tempCanvas.toDataURL('image/jpeg', 0.7); // Added quality parameter
+    
+    // Check final size before sending
+    const binaryLength = atob(imageData.split(',')[1]).length;
+    if (binaryLength > 100000) { // Slightly below server limit
+      alert('Image is too large. Please try using fewer colors or simpler shapes.');
+      return;
+    }
+    
     onImageReady(imageData);
   };
 
@@ -189,7 +198,7 @@ const DrawingCanvas = ({ onClose, onImageReady }) => {
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
       <div className="bg-gray-800 p-4 rounded-lg max-w-full max-h-[90vh] overflow-y-auto" ref={containerRef}>
         <div className="flex justify-between items-center mb-4">
-          <h3 className="text-white text-lg font-semibold">Create Your Image (4:3)</h3>
+          <h3 className="text-white text-lg font-semibold">Create Your Image</h3>
           <button 
             onClick={onClose}
             className="text-gray-400 hover:text-white"

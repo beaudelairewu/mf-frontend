@@ -1,9 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Rotate3d } from 'lucide-react';
-import SearchInterface from './SearchInterface';
 
-const ModelGenerator = () => {
+
+const useTextGen = () => {
   const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
   const navigate = useNavigate();
 
@@ -15,6 +14,7 @@ const ModelGenerator = () => {
   const [lastPrompt, setLastPrompt] = useState('');
 
   useEffect(() => {
+
     let intervalId;
 
     const checkTaskStatus = async () => {
@@ -30,7 +30,6 @@ const ModelGenerator = () => {
           clearInterval(intervalId);
           setIsLoading(false);
 
-          // Navigate immediately with the 3D model
           navigate('/editor', {
             state: {
               modelUrl: taskData.model_urls.glb,
@@ -45,7 +44,6 @@ const ModelGenerator = () => {
             replace: true,
           });
 
-          // Start texture generation after a delay
           setTimeout(async () => {
             try {
               const textureResponse = await fetch(`${API_BASE_URL}/api/texture`, {
@@ -67,7 +65,7 @@ const ModelGenerator = () => {
             } catch (error) {
               console.error('Failed to start texture generation:', error);
             }
-          }, 2000); // 2-second delay before starting texture generation
+          }, 2000);
         } else if (taskData.status === 'FAILED') {
           clearInterval(intervalId);
           setIsLoading(false);
@@ -92,7 +90,7 @@ const ModelGenerator = () => {
     };
   }, [currentTaskId, navigate, lastPrompt]);
 
-  const handleSearch = async (query) => {
+  const generateModel = async (query) => {
     try {
       setIsLoading(true);
       setErrorMessage(null);
@@ -135,50 +133,14 @@ const ModelGenerator = () => {
     }
   };
 
-  const handleRandom = () => {
-    const randomPrompts = [
-      'A cute robot companion with friendly features',
-      'An ancient magical crystal formation',
-      'A steampunk pocket watch with intricate gears',
-      'A mystical floating island with waterfalls',
-      'A futuristic hover vehicle with neon accents',
-    ];
-    const randomPrompt = randomPrompts[Math.floor(Math.random() * randomPrompts.length)];
-    handleSearch(randomPrompt);
+  return {
+    generateModel,
+    isLoading,
+    taskStatus,
+    errorMessage,
+    setErrorMessage,
+    textureTaskId
   };
-
-  return (
-    <>
-      <SearchInterface onSearch={handleSearch} onRandom={handleRandom} />
-
-      {isLoading && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center">
-          <div className="bg-gray-800 p-6 rounded-lg">
-            <div className="animate-spin mb-4">
-              <Rotate3d className="w-8 h-8 text-blue-500" />
-            </div>
-            <p className="text-white text-center">
-              Generating your 3D model...
-              {taskStatus?.progress !== undefined && ` (${taskStatus.progress}%)`}
-            </p>
-          </div>
-        </div>
-      )}
-
-      {errorMessage && (
-        <div className="fixed bottom-4 right-4 bg-red-500 text-white px-6 py-4 rounded-lg shadow-lg">
-          <p className="font-semibold">Error</p>
-          <p>{errorMessage}</p>
-          <button
-            onClick={() => setErrorMessage(null)}
-            className="absolute top-2 right-2 text-white hover:text-gray-200"
-          >
-            ×
-          </button>
-        </div>
-      )}
-    </>
-  );
 };
 
-export default ModelGenerator;
+export default useTextGen;
