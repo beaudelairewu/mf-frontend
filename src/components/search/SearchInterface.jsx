@@ -1,36 +1,23 @@
+// src/components/search/SearchInterface.jsx
 import React, { useState } from 'react';
 import { SearchIcon, Package, Pencil, AlertCircle } from 'lucide-react';
 import { BackgroundGrid } from './BackgroundGrid';
-import { useImageGen } from '../../hooks/useImageGen';
 import useTypingEffect from '../../hooks/useTypingEffect';
 import logo from '../../images/modelflow.png';
 import DrawingCanvas from './CanvasDrawing';
 
-const ModelflowInterface = ({ onSearch, onRandom }) => {
+const SearchInterface = ({ onSearch, onRandom, onImageReady }) => {
   const [searchQuery, setSearchQuery] = useState('');
-  const [showTooltip, setShowTooltip] = useState(false);
-  const [showDrawing, setShowDrawing] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const { handleImageReady } = useImageGen(
-    setShowDrawing,
-    setIsLoading,
-    setError
-  );
+      const [showTooltip, setShowTooltip] = useState(false);
+      const [showDrawing, setShowDrawing] = useState(false);
+
   const displayText = useTypingEffect();
 
   const handleSubmit = (e) => {
     e.preventDefault();
-
     if (searchQuery.trim()) {
-      onSearch(searchQuery.trim(), e);
+      onSearch(searchQuery.trim());
     }
-  };
-
-  const handleRandomClick = (e) => {
-    e.preventDefault();
-
-    onRandom(e);
   };
 
   return (
@@ -80,7 +67,7 @@ const ModelflowInterface = ({ onSearch, onRandom }) => {
             <div className="relative">
               <button 
                 type="button"
-                onClick={handleRandomClick}
+                onClick={onRandom}
                 className="p-3 bg-gray-700/50 rounded-lg hover:bg-gray-600/50 transition-colors"
                 onMouseEnter={() => setShowTooltip(true)}
                 onMouseLeave={() => setShowTooltip(false)}
@@ -98,44 +85,18 @@ const ModelflowInterface = ({ onSearch, onRandom }) => {
         </div>
       </div>
 
-      {/* Loading State */}
-      {isLoading && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-gray-800 p-6 rounded-lg text-white text-center">
-            <div className="animate-spin mb-4">
-              <Package className="w-8 h-8 text-blue-500" />
-            </div>
-            <p>Converting your image to 3D...</p>
-          </div>
-        </div>
-      )}
-
-      {/* Error State */}
-      {error && (
-        <div className="fixed bottom-4 right-4 bg-red-500 text-white px-6 py-4 rounded-lg shadow-lg z-50 flex items-start gap-3">
-          <AlertCircle className="w-5 h-5 flex-shrink-0 mt-0.5" />
-          <div>
-            <p className="font-semibold">Error</p>
-            <p>{error}</p>
-          </div>
-          <button 
-            onClick={() => setError(null)}
-            className="absolute top-2 right-2 text-white/80 hover:text-white"
-          >
-            ×
-          </button>
-        </div>
-      )}
-
       {/* Drawing Canvas Modal */}
       {showDrawing && (
         <DrawingCanvas 
           onClose={() => setShowDrawing(false)}
-          onImageReady={handleImageReady}
+          onImageReady={(imageData) => {
+            setShowDrawing(false);
+            onImageReady(imageData);
+          }}
         />
       )}
     </div>
   );
 };
 
-export default ModelflowInterface;
+export default SearchInterface;

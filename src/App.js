@@ -2,7 +2,7 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 // import ModelflowWithNavigation from './components/ModelflowWithNavigation';
-import ModelEditorWithState from './components/ModelEditorWithSate';
+import ModelEditorWithState from './components/editor/ModelEditorWithSate';
 // import ModelDebugTest from './components/ModelDebugTest';
 // import DirectFileDownloader from './components/ModelDownloader';
 import ModelGenerator from './components/search/ModelGenerator';

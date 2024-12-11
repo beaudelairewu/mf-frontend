@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Download, Rotate3d, Maximize2, Minimize2, Upload } from 'lucide-react';
-import { Card } from './common_ui/Card';
-import { SceneSetup } from '../utils/sceneSetup';
-import { ModelLoader } from '../utils/modelLoader';
-import { useTextureGen } from '../hooks/useTextureGen';
-import logo from '../images/modelflow.png';
+import { Card } from '../common_ui/Card';
+import { SceneSetup } from '../../utils/sceneSetup';
+import { ModelLoader } from '../../utils/modelLoader';
+import { useTextureGen } from '../../hooks/useTextureGen';
+import logo from '../../images/modelflow.png';
 
 const ModelEditorPage = ({ modelUrl, modelDetails, textureTaskId, taskId }) => {
   const [isLoading, setIsLoading] = useState(true);

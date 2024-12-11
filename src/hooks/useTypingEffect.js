@@ -7,10 +7,10 @@ const useTypingEffect = (typingSpeed = 100, pauseDuration = 7000, deletingSpeed 
   const [isTyping, setIsTyping] = useState(true);
   const phrases = [
     "A teddy bear wearing santa hat...",
-    "A cyberpunk city at night...",
-    "A magical forest with fairies...",
-    "An astronaut on Mars...",
-    "A steampunk watch mechanism..."
+    "A sleek sports car with a spoiler at the back.",
+    "A cozy armchair with a cushioned seat and wooden legs.",
+    "A friendly dog wearing a superhero cape.",
+    "A cat curled up inside a cozy basket.",
   ];
   useEffect(() => {
     if (isTyping) {
